@@ -1,0 +1,48 @@
+x-airflow-common:
+  &airflow-common
+  environment:
+    &airflow-common-env
+    AIRFLOW__CORE__LOAD_EXAMPLES: "false"
+    AIRFLOW__CORE__LOAD_DEFAULT_CONNECTIONS: "false"
+    PYTHONPATH: /opt/airflow
+
+services:
+  airflow-apiserver:
+    volumes:
+      - ./common:/opt/airflow/common
+      - ./etl:/opt/airflow/etl
+      - ./queries:/opt/airflow/queries
+    environment:
+      <<: *airflow-common-env
+  
+  airflow-scheduler:
+    volumes:
+      - ./common:/opt/airflow/common
+      - ./etl:/opt/airflow/etl
+      - ./queries:/opt/airflow/queries
+    environment:
+      <<: *airflow-common-env
+
+  airflow-dag-processor:
+    volumes:
+      - ./common:/opt/airflow/common
+      - ./etl:/opt/airflow/etl
+      - ./queries:/opt/airflow/queries
+    environment:
+      <<: *airflow-common-env
+
+  airflow-worker:
+    volumes:
+      - ./common:/opt/airflow/common
+      - ./etl:/opt/airflow/etl
+      - ./queries:/opt/airflow/queries
+    environment:
+      <<: *airflow-common-env
+
+  airflow-triggerer:
+    volumes:
+      - ./common:/opt/airflow/common
+      - ./etl:/opt/airflow/etl
+      - ./queries:/opt/airflow/queries
+    environment:
+      <<: *airflow-common-env

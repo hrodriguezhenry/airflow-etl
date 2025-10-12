@@ -1,8 +1,6 @@
 # Airflow-specific
 logs/
-config/airflow.cfg
 config/db_connections.yaml
-docker-compose.override.yml
 
 # Credentials & local overrides
 .env
