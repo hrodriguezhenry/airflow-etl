@@ -1,0 +1,50 @@
+# ===================================================================
+# Database connection settings for ETL project
+#
+# Each top-level key represents a database alias.
+# Supported drivers: mysql, sqlserver, postgres, oracle, hana
+#
+# Fields:
+#   driver   : Database type (must be one of the supported drivers).
+#   host     : Database server host.
+#   port     : Port number of the database server.
+#   user     : Database username.
+#   password : Database password.
+#   database : Database name (or service name for Oracle).
+#
+# Example usage:
+#   from common.connections import get_engine
+#   engine = get_engine("database_alias")
+# ===================================================================
+
+mysql_demo:
+  driver: mysql
+  host: mysql_host
+  port: 3306
+  database: demo
+  user: root
+  password: ********
+
+sqlserver_demo:
+  driver: sqlserver
+  host: sqlserver_host
+  port: 1433
+  database: demo
+  user: sa
+  password: ********
+
+oracle_demo:
+  driver: oracle
+  host: oracle_host
+  port: 1521
+  database: demo
+  user: system
+  password: ********
+
+hana_demo:
+  driver: hana
+  host: hana_host
+  port: 30015
+  database: HANA_DB
+  user: SYSTEM
+  password: ********

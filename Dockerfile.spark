@@ -1,0 +1,15 @@
+FROM bitnami/spark:3
+
+# Cambiar a root para instalar dependencias
+USER root
+
+# Instalar pip y dependencias
+RUN apt-get update && apt-get install -y python3-pip ncurses-bin \
+ && pip3 install --no-cache-dir pyyaml \
+ && rm -rf /var/lib/apt/lists/*
+
+COPY config/* /opt/bitnami/spark/conf/
+COPY jars/* /opt/bitnami/spark/jars/
+
+# Volver al usuario por defecto
+USER 1001

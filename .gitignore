@@ -1,0 +1,21 @@
+# Airflow-specific
+logs/
+config/airflow.cfg
+config/db_connections.yaml
+docker-compose.override.yml
+
+# Credentials & local overrides
+.env
+
+# Python caches
+__pycache__/
+*.py[cod]
+*.pyo
+.pytest_cache/
+
+# Editor / tooling
+.vscode/
+
+# Generated or local resources
+file_tree.txt
+jars/
