@@ -127,11 +127,11 @@ def create_table_from_query(
         # 1. Create temporary view
         with engine_src.connect() as conn_src:
             create_or_replace_view(conn_src, engine_src.dialect.name, view_name, query)
-            logger.info(f"Temporary view {view_name} created in {source_db}")
+            logger.info(f"Temporary view {view_name} created in {engine_src.url.database}")
 
         # 2. Inspect columns from view
         insp = inspect(engine_src)
-        col_meta = insp.get_columns(view_name, schema=source_db)
+        col_meta = insp.get_columns(view_name, schema=engine_src.url.database)
 
         columns = []
         for meta in col_meta:
@@ -167,7 +167,7 @@ def create_table_from_query(
         metadata.create_all(engine_dest)
         logger.info(
             f"Table {schema_to_use+'.' if schema_to_use else ''}{target_table} created "
-            f"in {target_db} with {len(columns)} columns"
+            f"in {engine_dest.url.database} with {len(columns)} columns"
         )
 
     except Exception as e:
@@ -179,7 +179,7 @@ def create_table_from_query(
         with engine_src.connect() as conn_src:
             try:
                 drop_view(conn_src, engine_src.dialect.name, view_name)
-                logger.info(f"Temporary view {view_name} dropped in {source_db}")
+                logger.info(f"Temporary view {view_name} dropped in {engine_src.url.database}")
             except Exception as e:
                 logger.warning(f"Could not drop temporary view {view_name}: {e}")
 
