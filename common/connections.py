@@ -111,8 +111,15 @@ def get_engine(db_key: str):
         else:
             logger.error(f"Unsupported driver: {driver}")
             raise ValueError(f"Unsupported driver: {driver}")
-
-        engine = create_engine(url, future=True)
+        
+        if driver == "sqlserver":
+            engine = create_engine(
+                url,
+                future=True,
+                fast_executemany=True,
+            )
+        else:
+            engine = create_engine(url, future=True)
         logger.info(f"Connection successfully created for '{db_key}' ({driver})")
         return engine
 

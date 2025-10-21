@@ -27,7 +27,8 @@ import sys
 ROOT_DIR = Path(__file__).resolve().parents[3]
 sys.path.insert(0, str(ROOT_DIR))
 
-from sqlalchemy import text
+from sqlalchemy import insert
+from sqlalchemy.sql import table as sa_table, column as sa_column
 from common.logger import logger
 
 def load_to_db(engine, table, rows, batch_size: int = 10000, mode="append"):
@@ -61,28 +62,39 @@ def load_to_db(engine, table, rows, batch_size: int = 10000, mode="append"):
     """
     rows_copied = 0
     buffer = []
-    insert_sql = None
+    insert_stmt = None
 
-    for row in rows:
-        buffer.append(row)
+    # Reuse a single connection and commit per batch to reduce overhead.
+    with engine.connect() as conn:
+        trans = conn.begin()
+        for row in rows:
+            buffer.append(row)
 
-        if insert_sql is None:
-            cols = row.keys()
-            col_names = ", ".join(cols)
-            placeholders = ", ".join([f":{c}" for c in cols])
-            insert_sql = text(f"INSERT INTO {table} ({col_names}) VALUES ({placeholders})")
+            if insert_stmt is None:
+                # Build a dialect-aware INSERT using SQLAlchemy Core so that
+                # drivers like mssql+pyodbc can leverage fast_executemany.
+                cols = list(row.keys())
+                # Support optional schema in table name (e.g., "dbo.customers").
+                if "." in table:
+                    schema, tbl_name = table.split(".", 1)
+                else:
+                    schema, tbl_name = None, table
 
-        if len(buffer) >= batch_size:
-            with engine.begin() as conn:
-                conn.execute(insert_sql, buffer)
+                tbl = sa_table(tbl_name, *[sa_column(c) for c in cols], schema=schema)
+                insert_stmt = insert(tbl)
+
+            if len(buffer) >= batch_size:
+                conn.execute(insert_stmt, buffer)
+                trans.commit()
+                trans = conn.begin()
+                rows_copied += len(buffer)
+                logger.info(f"{rows_copied:,} records inserted into {table}")
+                buffer.clear()
+
+        if buffer:
+            conn.execute(insert_stmt, buffer)
+            trans.commit()
             rows_copied += len(buffer)
-            logger.info(f"{rows_copied:,} records inserted into {table}")
-            buffer.clear()
-
-    if buffer:
-        with engine.begin() as conn:
-            conn.execute(insert_sql, buffer)
-        rows_copied += len(buffer)
 
     logger.info(f"Process completed: {rows_copied:,} total records in {table}")
     return rows_copied
