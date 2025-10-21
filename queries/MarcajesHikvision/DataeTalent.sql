@@ -1,0 +1,7 @@
+SELECT 
+	d.CODIGO AS CodigoEmpleado
+	,d.DESCRIPCION
+FROM EMPLEADOS_ETALENT d
+WHERE 
+	d.ESTADO = 'A'
+order by 1
