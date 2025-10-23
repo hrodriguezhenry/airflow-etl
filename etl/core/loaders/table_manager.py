@@ -413,11 +413,14 @@ def create_table_from_query(
         query_file (str): Path to the SQL file containing the query.
         source_db (str): Alias of the source database (must exist in db_connections.yaml).
         target_db (str): Alias of the target database (must exist in db_connections.yaml).
-        target_table (str): Name of the table to create in the target database.
+        target_table (str): Name of the table to create in the target database. Can be
+            schema-qualified (e.g., "myschema.mytable"). If qualified and
+            target_schema is not provided, the inline schema is used.
         overrides (dict, optional): Column overrides by name.
             Example: {"col1": {"type": String(500)}, "col2": {"length": 50}}
         target_schema (str, optional): Schema to use in the target database.
-            Defaults to "dbo" for SQL Server if not provided.
+            Takes precedence if provided. Defaults to "dbo" for SQL Server
+            when neither an inline schema nor this parameter is provided.
 
     Raises:
         Exception: If table creation fails at any step.
@@ -435,7 +438,9 @@ def create_table_from_query(
     engine_dest = get_engine(target_db)
     query = load_sql(query_file)
 
-    view_name = f"tmp_view_{target_table}"
+    # Build a safe temporary view name (avoid dots if a qualified table was passed)
+    safe_tbl_for_view = str(target_table).replace(".", "_")
+    view_name = f"tmp_view_{safe_tbl_for_view}"
 
     try:
         columns = []
@@ -489,17 +494,24 @@ def create_table_from_query(
                         sa_type = String(ov["length"])
                 columns.append(Column(col_name, sa_type))
 
-        schema_to_use = target_schema
-        if engine_dest.dialect.name == "mssql" and not target_schema:
+        # Support 'schema.table' passed in target_table while still honoring explicit target_schema
+        tbl_name = target_table
+        inline_schema = None
+        if isinstance(target_table, str) and "." in target_table:
+            inline_schema, tbl_name = target_table.split(".", 1)
+
+        # Decide final schema to use
+        schema_to_use = target_schema if target_schema else inline_schema
+        if engine_dest.dialect.name == "mssql" and not schema_to_use:
             schema_to_use = "dbo"
 
         # Create table in target
         metadata = MetaData()
-        table = Table(target_table, metadata, *columns, schema=schema_to_use)
+        table = Table(tbl_name, metadata, *columns, schema=schema_to_use)
         metadata.drop_all(engine_dest, [table], checkfirst=True)
         metadata.create_all(engine_dest)
         logger.info(
-            f"Table {schema_to_use+'.' if schema_to_use else ''}{target_table} created "
+            f"Table {schema_to_use+'.' if schema_to_use else ''}{tbl_name} created "
             f"in {engine_dest.url.database} with {len(columns)} columns"
         )
 

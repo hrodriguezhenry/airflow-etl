@@ -86,8 +86,10 @@ def upsert_to_db(engine, table, rows, unique_keys, batch_size: int = 10000):
                     where_clause = " AND ".join([f"{key} = :{key}" for key in unique_keys])
                     params = {key: row[key] for key in unique_keys}
 
-                    # Check if record exists
-                    exists_query = text(f"SELECT 1 FROM {table} WHERE {where_clause} LIMIT 1")
+                    # Check if record exists (use EXISTS to be dialect-agnostic, avoids LIMIT/TOP differences)
+                    exists_query = text(
+                        f"SELECT 1 WHERE EXISTS (SELECT 1 FROM {table} WHERE {where_clause})"
+                    )
                     exists = conn.execute(exists_query, params).fetchone()
 
                     if exists:
