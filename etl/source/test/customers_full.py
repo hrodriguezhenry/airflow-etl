@@ -12,7 +12,7 @@ from etl.core.loaders.table_manager import create_table_from_query
 from etl.core.loaders.db_loader import load_to_db
 
 def etl_customers():
-    query_file = "source/accesorios/customers_full.sql"
+    query_file = "source/test/customers_full.sql"
     
     # 1. Create table
     create_table_from_query(

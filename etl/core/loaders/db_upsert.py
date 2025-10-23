@@ -34,6 +34,22 @@ from sqlalchemy.exc import SQLAlchemyError
 from common.logger import logger
 
 
+def _quote_ident(name: str, dialect: str) -> str:
+    """Quote an identifier for the given SQL dialect."""
+    if dialect == "mssql":
+        return f"[{name.replace(']', ']]')}]"
+    if dialect == "mysql":
+        return f"`{name.replace('`', '``')}`"
+    # Fallback generic quoting
+    return f'"{name.replace("\"", "\"\"")}"'
+
+
+def _format_qualified(name: str, dialect: str) -> str:
+    """Quote a possibly schema-qualified name like schema.table."""
+    parts = (name or "").split(".")
+    return ".".join(_quote_ident(p, dialect) for p in parts if p)
+
+
 def upsert_to_db(engine, table, rows, unique_keys, batch_size: int = 10000):
     """
     Perform a logical UPSERT (insert or update) into a database table.
@@ -76,6 +92,8 @@ def upsert_to_db(engine, table, rows, unique_keys, batch_size: int = 10000):
     )
 
     try:
+        dialect = engine.dialect.name
+        qtable = _format_qualified(table, dialect)
         # Process in chunks
         for i in range(0, len(rows), batch_size):
             batch = rows[i:i + batch_size]
@@ -83,27 +101,27 @@ def upsert_to_db(engine, table, rows, unique_keys, batch_size: int = 10000):
             with engine.begin() as conn:
                 for row in batch:
                     # Build WHERE clause for key comparison
-                    where_clause = " AND ".join([f"{key} = :{key}" for key in unique_keys])
+                    where_clause = " AND ".join([f"{_quote_ident(key, dialect)} = :{key}" for key in unique_keys])
                     params = {key: row[key] for key in unique_keys}
 
                     # Check if record exists (use EXISTS to be dialect-agnostic, avoids LIMIT/TOP differences)
                     exists_query = text(
-                        f"SELECT 1 WHERE EXISTS (SELECT 1 FROM {table} WHERE {where_clause})"
+                        f"SELECT 1 WHERE EXISTS (SELECT 1 FROM {qtable} WHERE {where_clause})"
                     )
                     exists = conn.execute(exists_query, params).fetchone()
 
                     if exists:
                         # Prepare update statement excluding the key columns
                         set_clause = ", ".join(
-                            [f"{col} = :{col}" for col in row.keys() if col not in unique_keys]
+                            [f"{_quote_ident(col, dialect)} = :{col}" for col in row.keys() if col not in unique_keys]
                         )
-                        update_sql = text(f"UPDATE {table} SET {set_clause} WHERE {where_clause}")
+                        update_sql = text(f"UPDATE {qtable} SET {set_clause} WHERE {where_clause}")
                         conn.execute(update_sql, row)
                     else:
                         # Prepare insert statement
-                        cols = ", ".join(row.keys())
+                        cols = ", ".join(_quote_ident(c, dialect) for c in row.keys())
                         placeholders = ", ".join([f":{c}" for c in row.keys()])
-                        insert_sql = text(f"INSERT INTO {table} ({cols}) VALUES ({placeholders})")
+                        insert_sql = text(f"INSERT INTO {qtable} ({cols}) VALUES ({placeholders})")
                         conn.execute(insert_sql, row)
 
                 total_rows += len(batch)
