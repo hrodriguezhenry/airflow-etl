@@ -9,25 +9,37 @@ from common.utils import load_sql
 from etl.core.extractors.db_extractor import extract_from_db
 from etl.core.loaders.table_manager import create_table_from_query
 from etl.core.loaders.db_loader import load_to_db
+from etl.core.sql.scripts import run_sql_script
 
 def accesorios_weeks():
     query_file = "source/accesorios/weeks_full.sql"
-    
+    engine_src = get_engine("accesorios")
+    engine_dest = get_engine("tatabi")
+
     create_table_from_query(
         query_file=query_file,
         source_db="accesorios",
-        target_db="mysql_local",
+        target_db="tatabi",
         target_table="weeks",
-        target_schema=None,
+        target_schema="source_accesorios",
         inspect_mode="select"
     )
+
+    sql_script = [
+        """
+        IF NOT EXISTS (SELECT name FROM sysindexes WHERE name = 'saw_day')
+        CREATE INDEX saw_day ON source_accesorios.weeks(DAY);
+        IF NOT EXISTS (SELECT name FROM sysindexes WHERE name = 'saw_first_day_of_week')
+        CREATE INDEX saw_first_day_of_week ON source_accesorios.weeks(first_day_of_week);
+        IF NOT EXISTS (SELECT name FROM sysindexes WHERE name = 'saw_last_day_of_week')
+        CREATE INDEX saw_last_day_of_week ON source_accesorios.weeks(last_day_of_week);
+        """,
+    ]
     
-    engine_src = get_engine("accesorios")
+    run_sql_script(engine_dest, sql_script)
     query = load_sql(query_file)
     rows = list(extract_from_db(engine_src, query))
-    
-    engine_dest = get_engine("mysql_local")
-    load_to_db(engine_dest, "weeks", rows)
+    load_to_db(engine_dest, "source_accesorios.weeks", rows)
     
 if __name__ == "__main__":
     accesorios_weeks()

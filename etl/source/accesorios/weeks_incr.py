@@ -1,7 +1,7 @@
 from pathlib import Path
 import sys
 
-ROOT_DIR = Path(__file__).resolve().parents[3]  
+ROOT_DIR = Path(__file__).resolve().parents[3]
 sys.path.insert(0, str(ROOT_DIR))
 
 from common.connections import get_engine
@@ -11,13 +11,12 @@ from etl.core.loaders.db_upsert import upsert_to_db
 
 def accesorios_weeks():
     query_file = "source/accesorios/weeks_incr.sql"
-    
     engine_src = get_engine("accesorios")
+    engine_dest = get_engine("tatabi")
+    
     query = load_sql(query_file)
     rows = list(extract_from_db(engine_src, query))
-    
-    engine_dest = get_engine("mysql_local")
-    upsert_to_db(engine_dest, "weeks", rows, unique_keys=["day"])
+    upsert_to_db(engine_dest, "source_accesorios.weeks", rows, unique_keys=["day"])
     
 if __name__ == "__main__":
     accesorios_weeks()
