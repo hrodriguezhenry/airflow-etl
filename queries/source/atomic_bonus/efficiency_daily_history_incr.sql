@@ -1,0 +1,28 @@
+SELECT bedh.id,
+	bedh."day",
+	bedh.lactation,
+	bedh.cod_employee,
+	bedh.name,
+	bedh."group",
+	bedh.station_system_id,
+	bedh.efficiency_area_id,
+	bedh.bench_unauthorized,
+	bedh.time_worked,
+	bedh.time_with_worked,
+	bedh.time_lunch,
+	bedh.time_lunch_in_bench,
+	bedh.time_event,
+	bedh.time_lactation,
+	bedh.efficiency,
+	bedh.efficiency_setup,
+	bedh.time_setup,
+	bedh.expected_laboral_hours,
+	bedh.laboral_hours,
+	bedh.time_factor,
+	bedh.expected_amount,
+	bedh.amount,
+	bedh.affect_global_time,
+	bedh.created_at
+FROM Bonus_Efficiency_Daily_History AS bedh
+WHERE bedh.deleted_at IS NULL
+AND bedh.updated_at >= CONVERT(date, GETDATE() -3)
