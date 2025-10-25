@@ -88,10 +88,14 @@ def _sa_type_from_meta(base_type: str, length, precision, scale, dialect: str):
 
     # Character and text-like
     if bt in {"varchar", "nvarchar", "char", "nchar", "bpchar", "varbinary"}:
+        if dialect == "mssql" and length and length > 8000:
+            return String(None)
         return String(length or 255)
 
     if bt in {"text", "ntext", "json", "jsonb", "xml", "uuid", "bytea", "blob"}:
         # Map to generic string; if exact BLOB/BYTEA needed, extend here.
+        if dialect == "mssql":
+            return String(None)
         return String(length or 65535)
 
     # Fallback to generic mapping if available
@@ -457,7 +461,7 @@ def create_table_from_query(
                 precision = meta.get("precision")
                 scale = meta.get("scale")
 
-                sa_type = _sa_type_from_meta(base_type, length, precision, scale, engine_src.dialect.name)
+                sa_type = _sa_type_from_meta(base_type, length, precision, scale, engine_dest.dialect.name)
 
                 # Apply overrides
                 if overrides and col_name in overrides:
@@ -484,7 +488,7 @@ def create_table_from_query(
                 precision = getattr(col_type, "precision", None)
                 scale = getattr(col_type, "scale", None)
 
-                sa_type = _sa_type_from_meta(str(col_type), length, precision, scale, engine_src.dialect.name)
+                sa_type = _sa_type_from_meta(str(col_type), length, precision, scale, engine_dest.dialect.name)
 
                 if overrides and col_name in overrides:
                     ov = overrides[col_name]
