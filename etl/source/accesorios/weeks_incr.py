@@ -9,7 +9,7 @@ from common.utils import load_sql
 from etl.core.extractors.db_extractor import extract_from_db
 from etl.core.loaders.db_upsert import upsert_to_db
 
-def accesorios_weeks():
+def source_accesorios_weeks():
     query_file = "source/accesorios/weeks_incr.sql"
     engine_src = get_engine("accesorios")
     engine_dest = get_engine("tatabi")
@@ -19,4 +19,4 @@ def accesorios_weeks():
     upsert_to_db(engine_dest, "source_accesorios.weeks", rows, unique_keys=["day"])
     
 if __name__ == "__main__":
-    accesorios_weeks()
+    source_accesorios_weeks()

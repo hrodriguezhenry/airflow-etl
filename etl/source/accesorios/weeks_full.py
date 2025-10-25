@@ -11,7 +11,7 @@ from etl.core.loaders.table_manager import create_table_from_query
 from etl.core.loaders.db_loader import load_to_db
 from etl.core.sql.scripts import run_sql_script
 
-def accesorios_weeks():
+def source_accesorios_weeks():
     query_file = "source/accesorios/weeks_full.sql"
     engine_src = get_engine("accesorios")
     engine_dest = get_engine("tatabi")
@@ -42,4 +42,4 @@ def accesorios_weeks():
     load_to_db(engine_dest, "source_accesorios.weeks", rows)
     
 if __name__ == "__main__":
-    accesorios_weeks()
+    source_accesorios_weeks()
