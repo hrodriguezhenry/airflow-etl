@@ -28,8 +28,8 @@ def source_atomic_bonus_efficiency_area_detail():
 
     sql_script = [
         f"""
-        IF NOT EXISTS (SELECT name FROM sysindexes WHERE name = 'saabead_id')
-        CREATE INDEX saabead_id ON source_atomic_bonus.efficiency_area_detail(id);
+        IF NOT EXISTS (SELECT name FROM sysindexes WHERE name = 'sabead_id')
+        CREATE INDEX sabead_id ON source_atomic_bonus.efficiency_area_detail(id);
         """,
     ]
 

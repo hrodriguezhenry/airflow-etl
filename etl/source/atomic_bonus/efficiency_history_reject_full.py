@@ -28,8 +28,8 @@ def source_atomic_bonus_efficiency_history_reject():
 
     sql_script = [
         """
-        IF NOT EXISTS (SELECT name FROM sysindexes WHERE name = 'saabehr_id')
-        CREATE INDEX saabehr_id ON source_atomic_bonus.efficiency_history_reject(id);
+        IF NOT EXISTS (SELECT name FROM sysindexes WHERE name = 'sabehr_id')
+        CREATE INDEX sabehr_id ON source_atomic_bonus.efficiency_history_reject(id);
         """,
     ]
 

@@ -28,8 +28,8 @@ def source_atomic_bonus_employee_leader():
 
     sql_script = [
         """
-        IF NOT EXISTS (SELECT name FROM sysindexes WHERE name = 'saabeml_id')
-        CREATE INDEX saabeml_id ON source_atomic_bonus.employee_leader(id);
+        IF NOT EXISTS (SELECT name FROM sysindexes WHERE name = 'sabeml_id')
+        CREATE INDEX sabeml_id ON source_atomic_bonus.employee_leader(id);
         """,
     ]
 

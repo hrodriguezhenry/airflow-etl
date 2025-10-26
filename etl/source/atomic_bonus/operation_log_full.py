@@ -28,8 +28,8 @@ def source_atomic_bonus_operation_log():
 
     sql_script = [
         """
-        IF NOT EXISTS (SELECT name FROM sysindexes WHERE name = 'saabol_id')
-        CREATE INDEX saabol_id ON source_atomic_bonus.operation_log(id);
+        IF NOT EXISTS (SELECT name FROM sysindexes WHERE name = 'sabol_id')
+        CREATE INDEX sabol_id ON source_atomic_bonus.operation_log(id);
         """,
     ]
 

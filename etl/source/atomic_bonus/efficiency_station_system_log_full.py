@@ -28,8 +28,8 @@ def source_atomic_bonus_efficiency_station_system_log():
 
     sql_script = [
         """
-        IF NOT EXISTS (SELECT name FROM sysindexes WHERE name = 'saabessl_id')
-        CREATE INDEX saabessl_id ON source_atomic_bonus.efficiency_station_system_log(id);
+        IF NOT EXISTS (SELECT name FROM sysindexes WHERE name = 'sabessl_id')
+        CREATE INDEX sabessl_id ON source_atomic_bonus.efficiency_station_system_log(id);
         """,
     ]
 
