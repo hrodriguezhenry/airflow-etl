@@ -5,7 +5,6 @@ SELECT cld.id,
 	cld.input_field_id,
 	cld.layer_type,
 	cld.width_layer,
-	cld.layer_type,
 	cld.quantity,
 	cld."status",
 	cld.created_at

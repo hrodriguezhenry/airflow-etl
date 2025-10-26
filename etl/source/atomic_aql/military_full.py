@@ -11,7 +11,6 @@ from etl.core.loaders.table_manager import create_table_from_query
 from etl.core.loaders.db_loader import load_to_db
 from etl.core.sql.scripts import run_sql_script
 
-
 def source_atomic_aql_military():
     query_file = "source/atomic_aql/military_full.sql"
     engine_src = get_engine("proaktiv")
@@ -37,7 +36,6 @@ def source_atomic_aql_military():
     query = load_sql(query_file)
     rows = list(extract_from_db(engine_src, query))
     load_to_db(engine_dest, "source_atomic_aql.military", rows)
-
 
 if __name__ == "__main__":
     source_atomic_aql_military()

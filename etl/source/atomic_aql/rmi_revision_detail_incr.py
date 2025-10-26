@@ -9,7 +9,6 @@ from common.utils import load_sql
 from etl.core.extractors.db_extractor import extract_from_db
 from etl.core.loaders.db_upsert import upsert_to_db
 
-
 def source_atomic_aql_rmi_revision_detail():
     query_file = "source/atomic_aql/rmi_revision_detail_incr.sql"
     engine_src = get_engine("proaktiv")
@@ -18,7 +17,6 @@ def source_atomic_aql_rmi_revision_detail():
     query = load_sql(query_file)
     rows = list(extract_from_db(engine_src, query))
     upsert_to_db(engine_dest, "source_atomic_aql.rmi_revision_detail", rows, unique_keys=["id"])
-
 
 if __name__ == "__main__":
     source_atomic_aql_rmi_revision_detail()

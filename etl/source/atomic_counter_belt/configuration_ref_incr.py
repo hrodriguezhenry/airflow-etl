@@ -22,4 +22,3 @@ def source_atomic_counter_belt_configuration_ref():
 
 if __name__ == "__main__":
     source_atomic_counter_belt_configuration_ref()
-

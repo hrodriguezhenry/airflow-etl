@@ -41,4 +41,3 @@ def source_atomic_counter_belt_configuration():
 
 if __name__ == "__main__":
     source_atomic_counter_belt_configuration()
-
