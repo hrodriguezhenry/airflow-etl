@@ -39,4 +39,3 @@ def source_atomic_qis_inspection_distribution():
 
 if __name__ == "__main__":
     source_atomic_qis_inspection_distribution()
-
