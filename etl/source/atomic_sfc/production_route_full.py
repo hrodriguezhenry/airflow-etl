@@ -9,24 +9,32 @@ from common.utils import load_sql
 from etl.core.extractors.db_extractor import extract_from_db
 from etl.core.loaders.table_manager import create_table_from_query
 from etl.core.loaders.db_loader import load_to_db
+from etl.core.sql.scripts import run_sql_script
 
 def atomic_sfc_production_route():
     query_file = "source/atomic_sfc/production_route_full.sql"
+    engine_src = get_engine("atomic")
+    engine_dest = get_engine("tatabi")
     
     create_table_from_query(
         query_file=query_file,
         source_db="atomic",
         target_db="tatabi",
-        target_table="source_atomic_sfc.production_route",
-        target_schema=None,
+        target_table="production_route",
+        target_schema="source_atomic_sfc",
         inspect_mode="select"
     )
+
+    sql_script = [
+        """
+        IF NOT EXISTS (SELECT name FROM sysindexes WHERE name = 'saspr_id')
+        CREATE INDEX saspr_id ON source_atomic_sfc.production_route(id);
+        """,
+    ]
     
-    engine_src = get_engine("atomic")
+    run_sql_script(engine_dest, sql_script)
     query = load_sql(query_file)
     rows = list(extract_from_db(engine_src, query))
-    
-    engine_dest = get_engine("tatabi")
     load_to_db(engine_dest, "source_atomic_sfc.production_route", rows)
     
 if __name__ == "__main__":

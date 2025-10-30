@@ -9,24 +9,32 @@ from common.utils import load_sql
 from etl.core.extractors.db_extractor import extract_from_db
 from etl.core.loaders.table_manager import create_table_from_query
 from etl.core.loaders.db_loader import load_to_db
+from etl.core.sql.scripts import run_sql_script
 
 def atomic_sfc_detail_reposition():
     query_file = "source/atomic_sfc/detail_reposition_full.sql"
+    engine_src = get_engine("atomic")
+    engine_dest = get_engine("tatabi")
     
     create_table_from_query(
         query_file=query_file,
         source_db="atomic",
         target_db="tatabi",
-        target_table="source_atomic_sfc.detail_reposition",
-        target_schema=None,
+        target_table="detail_reposition",
+        target_schema="source_atomic_sfc",
         inspect_mode="select"
     )
-    
-    engine_src = get_engine("atomic")
+
+    sql_script = [
+        """
+        IF NOT EXISTS (SELECT name FROM sysindexes WHERE name = 'sasdr_id')
+        CREATE INDEX sasdr_id ON source_atomic.line(id);
+        """,
+    ]
+
+    run_sql_script(engine_dest, sql_script)
     query = load_sql(query_file)
     rows = list(extract_from_db(engine_src, query))
-    
-    engine_dest = get_engine("tatabi")
     load_to_db(engine_dest, "source_atomic_sfc.detail_reposition", rows)
     
 if __name__ == "__main__":

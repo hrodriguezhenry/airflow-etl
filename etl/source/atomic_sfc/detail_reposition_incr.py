@@ -11,12 +11,11 @@ from etl.core.loaders.db_upsert import upsert_to_db
 
 def atomic_sfc_detail_reposition():
     query_file = "source/atomic_sfc/detail_reposition_incr.sql"
-    
     engine_src = get_engine("atomic")
+    engine_dest = get_engine("tatabi")
+    
     query = load_sql(query_file)
     rows = list(extract_from_db(engine_src, query))
-    
-    engine_dest = get_engine("tatabi")
     upsert_to_db(engine_dest, "source_atomic_sfc.detail_reposition", rows, unique_keys=["id"])
     
 if __name__ == "__main__":
