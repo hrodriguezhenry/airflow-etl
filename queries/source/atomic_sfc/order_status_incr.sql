@@ -1,0 +1,28 @@
+SELECT sos.id,
+	sos.cust_ord_hdr_number,
+	sos.order_created_date,
+	sos.customer_number,
+	sos.customer_name,
+	sos.style_id,
+	sos.style_description,
+	sos.start_exportation,
+	sos.required_units_qr,
+	sos.required_units_pt,
+	sos.produced_units_pt,
+	sos.production_close,
+	sos.production_close_date,
+	sos.completed_devolution,
+	sos.completed_devolution_fgi,
+	sos.devolution_date,
+	sos.devolution_date_fgi,
+	sos.complete_finish_product,
+	sos.administrative_close,
+	sos.administrative_close_date,
+	sos.order_status,
+	sos.has_qrs,
+	sos.created_at,
+	sos.created_by,
+	sos.updated_at
+FROM SFC_Order_Status AS sos
+WHERE sos.deleted_at IS NULL
+AND CONVERT(date, sos.updated_at) >= CONVERT(date, GETDATE() -3)
