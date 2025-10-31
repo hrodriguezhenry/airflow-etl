@@ -1,0 +1,26 @@
+SELECT sdca.id,
+    sdca."day",
+    sdca.week,
+    sdca."year",
+    sdca.cod_employee,
+    sdca.type_distribution_id,
+    sdca.position,
+    sdca.cost_center,
+    sdca.cost_center_description,
+    sdca.concept,
+    sdca.dollar_change,
+    sdca.pay,
+    sdca.no_production_cost,
+    sdca.no_production_area_cost,
+    sdca.cost_distributed,
+    sdca.distributable,
+    sdca.cost_total,
+    sdca.distributed_status,
+    sdca.pending_hour,
+    sdca.distributed_pending_hour,
+    sdca.distributed_pending_hour_area,
+    sdca.created_at,
+    sdca.updated_at
+FROM SFC_Daily_Cost_Account AS sdca
+WHERE sdca.year = YEAR(DATEADD(MONTH, -1 + DATEDIFF(MONTH, 0, GETDATE()), 0))
+AND MONTH(sdca."day") = MONTH(DATEADD(MONTH, -1 + DATEDIFF(MONTH, 0, GETDATE()), 0))
