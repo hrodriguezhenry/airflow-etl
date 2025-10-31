@@ -17,8 +17,8 @@ def source_automate_repositions_detail():
     
     sql_script = [
         """
-        IF NOT EXISTS (SELECT name FROM sysindexes WHERE name = 'sard_flow_id')
-        CREATE INDEX sard_flow_id ON source_automate.repositions_detail(flow_id);
+        DELETE FROM source_automate.repositions_detail
+        WHERE updated_at >= CONVERT(date, GETDATE()-7);
         """,
     ]
 
