@@ -1,0 +1,30 @@
+SELECT sst.id,
+    sst.sfc_scan_qr_id,
+    sst.stage_id,
+    sst.line_id,
+    sst.operation_id,
+    sst.group_mark_id,
+    sst.substitute_group,
+    sst.style_route_id,
+    sst.sam_specific_id,
+    sst.mark_type,
+    sst.fingerprint,
+    sst.cod_employee,
+    sst.pay_per_piece,
+    sst.standard_time,
+    sst.quantity_checkin,
+    sst.quantity,
+    sst.time,
+    sst.status,
+    sst.last_close_at,
+    sst.manual,
+    sst.created_at,
+    sst.created_by,
+    sst.created_at_short,
+    sst.machine_fixed_asset,
+    sst.group_machine,
+    sst.machine_id
+FROM SFC_Scan_Transact AS sst
+WHERE sst.deleted_at IS NULL
+AND sst.sfc_scan_qr_id IS NOT NULL
+AND CONVERT(date, sst.updated_at) >= CONVERT(date, GETDATE() - 2)
