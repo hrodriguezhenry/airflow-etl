@@ -12,7 +12,7 @@ from etl.core.loaders.db_loader import load_to_db
 from etl.core.sql.scripts import run_sql_script
 
 def source_nesting_bills_material_codes():
-    query_file = "source/source_nesting/material_codes_full.sql"
+    query_file = "source/nesting_bills/material_codes_full.sql"
     engine_src = get_engine("nesting_bills")
     engine_dest = get_engine("tatabi")
 

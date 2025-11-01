@@ -10,7 +10,7 @@ from etl.core.extractors.db_extractor import extract_from_db
 from etl.core.loaders.db_upsert import upsert_to_db
 
 def source_nesting_bills_sessions():
-    query_file = "source/source_nesting/sessions_incr.sql"
+    query_file = "source/nesting_bills/sessions_incr.sql"
     engine_src = get_engine("nesting_bills")
     engine_dest = get_engine("tatabi")
 
