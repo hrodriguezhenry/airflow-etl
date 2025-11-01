@@ -9,7 +9,6 @@ from common.utils import load_sql
 from etl.core.extractors.db_extractor import extract_from_db
 from etl.core.loaders.db_upsert import upsert_to_db
 
-
 def source_proaktiv_bom():
     query_file = "source/proaktiv/bom_incr.sql"
     engine_src = get_engine("proaktiv")
@@ -23,7 +22,6 @@ def source_proaktiv_bom():
         rows,
         unique_keys=["stl_number", "clr_number", "sz_dim_det_number", "mat_code", "bom_desc"]
     )
-
 
 if __name__ == "__main__":
     source_proaktiv_bom()

@@ -9,7 +9,6 @@ from common.utils import load_sql
 from etl.core.extractors.db_extractor import extract_from_db
 from etl.core.loaders.db_upsert import upsert_to_db
 
-
 def source_proaktiv_fgi_output_hour_detail():
     query_file = "source/proaktiv/fgi_output_hour_detail_incr.sql"
     engine_src = get_engine("proaktiv")
@@ -23,7 +22,6 @@ def source_proaktiv_fgi_output_hour_detail():
         rows,
         unique_keys=["stl_number", "cust_ord_hdr_number", "fgi_production_date"]
     )
-
 
 if __name__ == "__main__":
     source_proaktiv_fgi_output_hour_detail()

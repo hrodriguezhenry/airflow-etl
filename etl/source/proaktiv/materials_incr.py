@@ -16,12 +16,7 @@ def source_proaktiv_materials():
 
     query = load_sql(query_file)
     rows = list(extract_from_db(engine_src, query))
-    upsert_to_db(
-        engine_dest,
-        "source_proaktiv.materials",
-        rows,
-        unique_keys=["mat_code"],
-    )
+    upsert_to_db(engine_dest, "source_proaktiv.materials", rows, unique_keys=["mat_code"])
 
 if __name__ == "__main__":
     source_proaktiv_materials()
