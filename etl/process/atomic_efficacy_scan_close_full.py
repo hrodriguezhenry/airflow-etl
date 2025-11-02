@@ -1,0 +1,41 @@
+from pathlib import Path
+import sys
+
+ROOT_DIR = Path(__file__).resolve().parents[3]
+sys.path.insert(0, str(ROOT_DIR))
+
+from common.connections import get_engine
+from common.utils import load_sql
+from etl.core.extractors.db_extractor import extract_from_db
+from etl.core.loaders.table_manager import create_table_from_query
+from etl.core.loaders.db_loader import load_to_db
+from etl.core.sql.scripts import run_sql_script
+
+def process_atomic_efficacy_scan_close():
+    query_file = "process/atomic_efficacy_scan_close_full.sql"
+    engine_src = get_engine("tatabi")
+    engine_dest = get_engine("tatabi")
+
+    create_table_from_query(
+        query_file=query_file,
+        source_db="tatabi",
+        target_db="tatabi",
+        target_table="atomic_efficacy_scan_close",
+        target_schema="process",
+        inspect_mode="select",
+    )
+
+    sql_script = [
+        """
+        IF NOT EXISTS (SELECT name FROM sysindexes WHERE name = 'paesc_date_scan_transact_id_cust_ord_style_id_production_prefix_qr_id_stage_id_stage_line_id_line_cod_employee')
+        CREATE INDEX paesc_date_scan_transact_id_cust_ord_style_id_production_prefix_qr_id_stage_id_stage_line_id_line_cod_employee ON process.atomic_efficacy_scan_close(date, scan_transact_id, cust_ord, style_id, production_prefix, qr_id, stage_id, stage, line_id, line, cod_employee);
+        """,
+    ]
+
+    run_sql_script(engine_dest, sql_script)
+    query = load_sql(query_file)
+    rows = list(extract_from_db(engine_src, query))
+    load_to_db(engine_dest, "process.atomic_efficacy_scan_close", rows)
+
+if __name__ == "__main__":
+    process_atomic_efficacy_scan_close()
