@@ -28,7 +28,7 @@ def source_atomic_sfc_statistics():
     sql_script = [
         """
         IF NOT EXISTS (SELECT name FROM sysindexes WHERE name = 'sassta_id')
-        CREATE INDEX sassta_id ON source_atomic_sfc.statistics(id);
+        CREATE INDEX sassta_id ON source_atomic_sfc."statistics"(id);
         """,
     ]
 
