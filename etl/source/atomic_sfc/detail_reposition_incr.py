@@ -9,7 +9,7 @@ from common.utils import load_sql
 from etl.core.extractors.db_extractor import extract_from_db
 from etl.core.loaders.db_upsert import upsert_to_db
 
-def atomic_sfc_detail_reposition():
+def source_atomic_sfc_detail_reposition():
     query_file = "source/atomic_sfc/detail_reposition_incr.sql"
     engine_src = get_engine("atomic")
     engine_dest = get_engine("tatabi")
@@ -19,4 +19,4 @@ def atomic_sfc_detail_reposition():
     upsert_to_db(engine_dest, "source_atomic_sfc.detail_reposition", rows, unique_keys=["id"])
     
 if __name__ == "__main__":
-    atomic_sfc_detail_reposition()
+    source_atomic_sfc_detail_reposition()

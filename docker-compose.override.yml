@@ -4,6 +4,7 @@ x-airflow-common:
     &airflow-common-env
     AIRFLOW__CORE__LOAD_EXAMPLES: "false"
     AIRFLOW__CORE__LOAD_DEFAULT_CONNECTIONS: "false"
+    AIRFLOW_ENV: ${AIRFLOW_ENV:-local}
     PYTHONPATH: /opt/airflow
 
 services:
