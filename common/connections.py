@@ -87,7 +87,7 @@ def get_engine(db_key: str):
             url = (
                 f"mssql+pyodbc://{db_conf['user']}:{db_conf['password']}"
                 f"@{db_conf['host']},{db_conf['port']}/{db_conf['database']}"
-                "?driver=ODBC+Driver+18+for+SQL+Server"
+                "?driver=ODBC+Driver+18+for+SQL+Server&Encrypt=yes&TrustServerCertificate=yes"
             )
 
         elif driver == "postgres":
