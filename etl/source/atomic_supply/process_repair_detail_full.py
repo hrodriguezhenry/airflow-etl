@@ -13,12 +13,12 @@ from etl.core.sql.scripts import run_sql_script
 
 def source_atomic_supply_process_repair_detail():
     query_file = "source/atomic_supply/process_repair_detail_full.sql"
-    engine_src = get_engine("atomic")
+    engine_src = get_engine("proaktiv")
     engine_dest = get_engine("tatabi")
 
     create_table_from_query(
         query_file=query_file,
-        source_db="atomic",
+        source_db="proaktiv",
         target_db="tatabi",
         target_table="process_repair_detail",
         target_schema="source_atomic_supply",
