@@ -12,7 +12,7 @@ from etl.core.loaders.db_upsert import upsert_to_db
 
 def source_atomic_qis_inspection_stage():
     query_file = "source/atomic_qis/inspection_stage_incr.sql"
-    engine_src = get_engine("atomic")
+    engine_src = get_engine("proaktiv")
     engine_dest = get_engine("tatabi")
 
     query = load_sql(query_file)

@@ -14,12 +14,12 @@ from etl.core.sql.scripts import run_sql_script
 
 def source_atomic_qis_inspection_stage():
     query_file = "source/atomic_qis/inspection_stage_full.sql"
-    engine_src = get_engine("atomic")
+    engine_src = get_engine("proaktiv")
     engine_dest = get_engine("tatabi")
 
     create_table_from_query(
         query_file=query_file,
-        source_db="atomic",
+        source_db="proaktiv",
         target_db="tatabi",
         target_table="inspection_stage",
         target_schema="source_atomic_qis",
