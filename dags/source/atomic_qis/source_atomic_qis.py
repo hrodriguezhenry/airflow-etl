@@ -1,8 +1,8 @@
 import os
 from datetime import datetime, timedelta
-
 from airflow import DAG
 from airflow.operators.python import PythonOperator
+
 from etl.source.atomic_qis.inspection_bundle_incr import source_atomic_qis_inspection_bundle
 from etl.source.atomic_qis.inspection_defect_incr import source_atomic_qis_inspection_defect
 from etl.source.atomic_qis.inspection_distribution_defect_incr import source_atomic_qis_inspection_distribution_defect
@@ -25,6 +25,21 @@ default_args = {
     "retry_delay": timedelta(minutes=5),
 }
 
+ETL_TASKS = {
+    "inspection_bundle": source_atomic_qis_inspection_bundle,
+    "inspection_defect": source_atomic_qis_inspection_defect,
+    "inspection_distribution_defect": source_atomic_qis_inspection_distribution_defect,
+    "inspection_distribution": source_atomic_qis_inspection_distribution,
+    "inspection_group_defect": source_atomic_qis_inspection_group_defect,
+    "inspection_group_mark_defect_detail": source_atomic_qis_inspection_group_mark_defect_detail,
+    "inspection_group_mark_defect": source_atomic_qis_inspection_group_mark_defect,
+    "inspection_revision": source_atomic_qis_inspection_revision,
+    "inspection_revision_repair": source_atomic_qis_inspection_revision_repair,
+    "inspection_stage": source_atomic_qis_inspection_stage,
+    "inspection_standard": source_atomic_qis_inspection_standard,
+    "inspection_station": source_atomic_qis_inspection_station,
+}
+
 with DAG(
     dag_id="source_atomic_qis",
     default_args=default_args,
@@ -36,66 +51,14 @@ with DAG(
     tags=["atomic_qis"],
 ) as dag:
 
-    inspection_bundle = PythonOperator(
-        task_id="inspection_bundle",
-        python_callable=source_atomic_qis_inspection_bundle
-    )
+    tasks = {
+        name: PythonOperator(
+            task_id=name,
+            python_callable=func
+        )
+        for name, func in ETL_TASKS.items()
+    }
 
-    inspection_defect = PythonOperator(
-        task_id="inspection_defect",
-        python_callable=source_atomic_qis_inspection_defect
-    )
-
-    inspection_distribution_defect = PythonOperator(
-        task_id="inspection_distribution_defect",
-        python_callable=source_atomic_qis_inspection_distribution_defect
-    )
-
-    inspection_distribution = PythonOperator(
-        task_id="inspection_distribution",
-        python_callable=source_atomic_qis_inspection_distribution
-    )
-
-    inspection_group_defect = PythonOperator(
-        task_id="inspection_group_defect",
-        python_callable=source_atomic_qis_inspection_group_defect
-    )
-
-    inspection_group_mark_defect_detail = PythonOperator(
-        task_id="inspection_group_mark_defect_detail",
-        python_callable=source_atomic_qis_inspection_group_mark_defect_detail
-    )
-
-    inspection_group_mark_defect = PythonOperator(
-        task_id="inspection_group_mark_defect",
-        python_callable=source_atomic_qis_inspection_group_mark_defect
-    )
-
-    inspection_revision = PythonOperator(
-        task_id="inspection_revision",
-        python_callable=source_atomic_qis_inspection_revision
-    )
-
-    inspection_revision_repair = PythonOperator(
-        task_id="inspection_revision_repair",
-        python_callable=source_atomic_qis_inspection_revision_repair
-    )
-
-    inspection_stage = PythonOperator(
-        task_id="inspection_stage",
-        python_callable=source_atomic_qis_inspection_stage
-    )
-
-    inspection_standard = PythonOperator(
-        task_id="inspection_standard",
-        python_callable=source_atomic_qis_inspection_standard
-    )
-
-    inspection_station = PythonOperator(
-        task_id="inspection_station",
-        python_callable=source_atomic_qis_inspection_station
-    )
-
-    inspection_bundle >> inspection_defect >> inspection_distribution_defect >> inspection_distribution
-    inspection_group_defect >> inspection_group_mark_defect_detail >> inspection_group_mark_defect >> inspection_revision
-    inspection_revision_repair >> inspection_stage >> inspection_standard >> inspection_station
+    tasks["inspection_bundle"] >> tasks["inspection_defect"] >> tasks["inspection_distribution_defect"] >> tasks["inspection_distribution"]
+    tasks["inspection_group_defect"] >> tasks["inspection_group_mark_defect_detail"] >> tasks["inspection_group_mark_defect"] >> tasks["inspection_revision"]
+    tasks["inspection_revision_repair"] >> tasks["inspection_stage"] >> tasks["inspection_standard"] >> tasks["inspection_station"]
