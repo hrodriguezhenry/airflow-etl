@@ -41,7 +41,7 @@ def _quote_ident(name: str, dialect: str) -> str:
     if dialect == "mysql":
         return f"`{name.replace('`', '``')}`"
     # Fallback generic quoting
-    return f'"{name.replace("\"", "\"\"")}"'
+    return '"' + name.replace('"', '""') + '"'
 
 
 def _format_qualified(name: str, dialect: str) -> str:
