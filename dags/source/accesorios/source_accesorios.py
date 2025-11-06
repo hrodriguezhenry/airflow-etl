@@ -14,6 +14,10 @@ default_args = {
     "retry_delay": timedelta(minutes=5),
 }
 
+ETL_TASKS = {
+    "weeks": source_accesorios_weeks,
+}
+
 with DAG(
     dag_id="source_accesorios",
     default_args=default_args,
@@ -25,9 +29,12 @@ with DAG(
     tags=["accesorios"],
 ) as dag:
 
-    weeks = PythonOperator(
-        task_id="weeks",
-        python_callable=source_accesorios_weeks
-    )
+    tasks = {
+        name: PythonOperator(
+            task_id=name,
+            python_callable=func
+        )
+        for name, func in ETL_TASKS.items()
+    }
 
-    weeks
+    tasks["weeks"]
