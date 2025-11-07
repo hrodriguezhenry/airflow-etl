@@ -9,8 +9,6 @@ sys.path.insert(0, str(ROOT_DIR))
 from airflow import DAG
 from airflow.operators.python import PythonOperator
 
-from airflow import DAG
-from airflow.operators.python import PythonOperator
 from etl.source.accesorios.weeks_incr import source_accesorios_weeks
 
 ENVIRONMENT = os.getenv("AIRFLOW_ENV", "local").lower()

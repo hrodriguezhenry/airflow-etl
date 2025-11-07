@@ -1,8 +1,14 @@
-import os
 from datetime import datetime, timedelta
+from pathlib import Path
+import sys
+import os
+
+ROOT_DIR = Path(__file__).resolve().parents[3]
+sys.path.insert(0, str(ROOT_DIR))
 
 from airflow import DAG
 from airflow.operators.python import PythonOperator
+
 from etl.source.hikvision.employees_mark_incr import source_hikvision_employees_mark
 
 ENVIRONMENT = os.getenv("AIRFLOW_ENV", "local").lower()

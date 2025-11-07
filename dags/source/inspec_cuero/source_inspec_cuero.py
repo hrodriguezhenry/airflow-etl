@@ -1,8 +1,14 @@
-import os
 from datetime import datetime, timedelta
+from pathlib import Path
+import sys
+import os
+
+ROOT_DIR = Path(__file__).resolve().parents[3]
+sys.path.insert(0, str(ROOT_DIR))
 
 from airflow import DAG
 from airflow.operators.python import PythonOperator
+
 from etl.source.inspec_cuero.decisions_incr import source_inspec_cuero_decisions
 from etl.source.inspec_cuero.headers_incr import source_inspec_cuero_headers
 from etl.source.inspec_cuero.rejection_header_incr import source_inspec_cuero_rejection_header

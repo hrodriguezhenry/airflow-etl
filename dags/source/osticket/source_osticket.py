@@ -1,8 +1,14 @@
-import os
 from datetime import datetime, timedelta
+from pathlib import Path
+import sys
+import os
+
+ROOT_DIR = Path(__file__).resolve().parents[3]
+sys.path.insert(0, str(ROOT_DIR))
 
 from airflow import DAG
 from airflow.operators.python import PythonOperator
+
 from etl.source.osticket.ost_department_incr import source_osticket_ost_department
 from etl.source.osticket.ost_help_topic_incr import source_osticket_ost_help_topic
 from etl.source.osticket.ost_organization_incr import source_osticket_ost_organization

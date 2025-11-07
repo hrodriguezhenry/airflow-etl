@@ -1,8 +1,14 @@
-import os
 from datetime import datetime, timedelta
+from pathlib import Path
+import sys
+import os
+
+ROOT_DIR = Path(__file__).resolve().parents[3]
+sys.path.insert(0, str(ROOT_DIR))
 
 from airflow import DAG
 from airflow.operators.python import PythonOperator
+
 from etl.source.nesting_orders.batches_incr import source_source_nesting_orders_batches
 from etl.source.nesting_orders.jobs_incr import source_source_nesting_orders_jobs
 from etl.source.nesting_orders.lay_shapes_incr import source_source_nesting_orders_lay_shapes

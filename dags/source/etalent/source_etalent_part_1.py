@@ -1,5 +1,11 @@
-import os
 from datetime import datetime, timedelta
+from pathlib import Path
+import sys
+import os
+
+ROOT_DIR = Path(__file__).resolve().parents[3]
+sys.path.insert(0, str(ROOT_DIR))
+
 from airflow import DAG
 from airflow.operators.python import PythonOperator
 
@@ -34,26 +40,26 @@ default_args = {
 }
 
 ETL_TASKS = {
-    # "clinical_suspension": source_etalent_clinical_suspension,
-    # "clinical_suspension_reason": source_etalent_clinical_suspension_reason,
-    # "employee": source_etalent_employee,
-    # "employees": source_etalent_employees,
-    # "employees_permission": source_etalent_employees_permission,
-    # "frozen_payroll_8": source_etalent_frozen_payroll_8,
-    # "historical_data_policy_provisions": source_etalent_historical_data_policy_provisions,
-    # "historical_data_policy_salary": source_etalent_historical_data_policy_salary,
-    # "liquidation_collaborator_detail": source_etalent_liquidation_collaborator_detail,
-    # "liquidation_collaborator": source_etalent_liquidation_collaborator,  
-    # "payroll_history": source_etalent_payroll_history,
-    # "payroll_parameters": source_etalent_payroll_parameters,
+    "clinical_suspension": source_etalent_clinical_suspension,
+    "clinical_suspension_reason": source_etalent_clinical_suspension_reason,
+    "employee": source_etalent_employee,
+    "employees": source_etalent_employees,
+    "employees_permission": source_etalent_employees_permission,
+    "frozen_payroll_8": source_etalent_frozen_payroll_8,
+    "historical_data_policy_provisions": source_etalent_historical_data_policy_provisions,
+    "historical_data_policy_salary": source_etalent_historical_data_policy_salary,
+    "liquidation_collaborator_detail": source_etalent_liquidation_collaborator_detail,
+    "liquidation_collaborator": source_etalent_liquidation_collaborator,  
+    "payroll_history": source_etalent_payroll_history,
+    "payroll_parameters": source_etalent_payroll_parameters,
     "position_profit_center": source_etalent_position_profit_center,
-    # "position": source_etalent_position,
-    # "profit_center": source_etalent_profit_center,
-    # "reason_liquidation": source_etalent_reason_liquidation,
-    # "type_payroll": source_etalent_type_payroll,
-    # "unit": source_etalent_unit,
-    # "vacation": source_etalent_vacation,
-    # "vacations_consumed": source_etalent_vacations_consumed,
+    "position": source_etalent_position,
+    "profit_center": source_etalent_profit_center,
+    "reason_liquidation": source_etalent_reason_liquidation,
+    "type_payroll": source_etalent_type_payroll,
+    "unit": source_etalent_unit,
+    "vacation": source_etalent_vacation,
+    "vacations_consumed": source_etalent_vacations_consumed,
 }
 
 with DAG(

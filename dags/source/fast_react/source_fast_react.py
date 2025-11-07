@@ -1,8 +1,14 @@
-import os
 from datetime import datetime, timedelta
+from pathlib import Path
+import sys
+import os
+
+ROOT_DIR = Path(__file__).resolve().parents[3]
+sys.path.insert(0, str(ROOT_DIR))
 
 from airflow import DAG
 from airflow.operators.python import PythonOperator
+
 from etl.source.fast_react.weekly_planning_incr import source_fast_react_weekly_planning
 from etl.source.fast_react.weekly_planning_old_incr import source_fast_react_weekly_planning_old
 
