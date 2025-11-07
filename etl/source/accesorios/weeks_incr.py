@@ -16,7 +16,7 @@ def source_accesorios_weeks():
     
     query = load_sql(query_file)
     rows = list(extract_from_db(engine_src, query))
-    upsert_to_db(engine_dest, "source_accesorios.weeks", rows, unique_keys=["day"])
+  #  upsert_to_db(engine_dest, "source_accesorios.weeks", rows, unique_keys=["day"])
     
 if __name__ == "__main__":
     source_accesorios_weeks()
