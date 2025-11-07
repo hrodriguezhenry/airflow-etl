@@ -82,6 +82,33 @@ def get_engine(db_key: str):
                 f"mysql+mysqlconnector://{db_conf['user']}:{db_conf['password']}"
                 f"@{db_conf['host']}:{db_conf['port']}/{db_conf['database']}"
             )
+            
+            ssl_conf = db_conf.get("ssl") or {}
+            connect_args = {}
+
+            def pick(key):
+                if key in ssl_conf:
+                    return ssl_conf.get(key)
+                return db_conf.get(key)
+
+            for k in (
+                "ssl_disabled",
+                "ssl_ca",
+                "ssl_cert",
+                "ssl_key",
+                "ssl_verify_cert",
+                "ssl_verify_identity",
+            ):
+                v = pick(k)
+                if v is not None and v != "":
+                    connect_args[k] = v
+
+            tv = pick("tls_versions")
+            if tv is not None and tv != "":
+                if isinstance(tv, str):
+                    connect_args["tls_versions"] = [tv]
+                else:
+                    connect_args["tls_versions"] = list(tv)
 
         elif driver == "sqlserver":
             url = (
@@ -119,7 +146,10 @@ def get_engine(db_key: str):
                 fast_executemany=True,
             )
         else:
-            engine = create_engine(url, future=True)
+            if driver == "mysql":
+                engine = create_engine(url, future=True, connect_args=connect_args)
+            else:
+                engine = create_engine(url, future=True)
         logger.info(f"Connection successfully created for '{db_key}' ({driver})")
         return engine
 
