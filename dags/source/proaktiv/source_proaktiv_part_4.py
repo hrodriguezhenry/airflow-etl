@@ -33,7 +33,7 @@ ETL_TASKS = {
 }
 
 with DAG(
-    dag_id="source_proaktiv_part_2",
+    dag_id="source_proaktiv_part_4",
     default_args=default_args,
     description="Carga de ETLs de Proaktiv hacia Tatabi",
     schedule=SCHEDULE,
