@@ -25,6 +25,7 @@ Example:
 
 from pathlib import Path
 import sys
+import itertools
 
 ROOT_DIR = Path(__file__).resolve().parents[3]
 sys.path.insert(0, str(ROOT_DIR))
@@ -48,6 +49,16 @@ def _format_qualified(name: str, dialect: str) -> str:
     """Quote a possibly schema-qualified name like schema.table."""
     parts = (name or "").split(".")
     return ".".join(_quote_ident(p, dialect) for p in parts if p)
+
+
+def _batched(iterable, n):
+    """Yield lists of size up to n from an iterable."""
+    it = iter(iterable)
+    while True:
+        chunk = list(itertools.islice(it, n))
+        if not chunk:
+            break
+        yield chunk
 
 
 def upsert_to_db(engine, table, rows, unique_keys, batch_size: int = 10000):
@@ -78,7 +89,8 @@ def upsert_to_db(engine, table, rows, unique_keys, batch_size: int = 10000):
         ValueError: If no unique keys are provided.
         sqlalchemy.exc.SQLAlchemyError: If the UPSERT execution fails.
     """
-    if not rows:
+    # Note: 'rows' can be a generator/iterator. Avoid truthiness checks that consume it.
+    if rows is None:
         logger.info(f"No records to upsert into {table}")
         return 0
 
@@ -94,35 +106,85 @@ def upsert_to_db(engine, table, rows, unique_keys, batch_size: int = 10000):
     try:
         dialect = engine.dialect.name
         qtable = _format_qualified(table, dialect)
-        # Process in chunks
-        for i in range(0, len(rows), batch_size):
-            batch = rows[i:i + batch_size]
+        # Process in chunks, supporting both sequences and generators
+        for batch in _batched(rows, batch_size):
+            if not batch:
+                continue
 
             with engine.begin() as conn:
-                for row in batch:
-                    # Build WHERE clause for key comparison
-                    where_clause = " AND ".join([f"{_quote_ident(key, dialect)} = :{key}" for key in unique_keys])
-                    params = {key: row[key] for key in unique_keys}
+                # Optimized path for a single unique key: set-based lookup + executemany
+                if len(unique_keys) == 1:
+                    ukey = unique_keys[0]
 
-                    # Check if record exists (use EXISTS to be dialect-agnostic, avoids LIMIT/TOP differences)
-                    exists_query = text(
-                        f"SELECT 1 WHERE EXISTS (SELECT 1 FROM {qtable} WHERE {where_clause})"
-                    )
-                    exists = conn.execute(exists_query, params).fetchone()
+                    # Collect unique key values for the batch
+                    key_values = [row[ukey] for row in batch]
 
-                    if exists:
-                        # Prepare update statement excluding the key columns
-                        set_clause = ", ".join(
-                            [f"{_quote_ident(col, dialect)} = :{col}" for col in row.keys() if col not in unique_keys]
+                    # SQL Server has a 2100-parameter limit per statement.
+                    # Split the IN clause into safe chunks when needed.
+                    max_params = 2000 if dialect == "mssql" else len(key_values)
+                    existing_keys = set()
+                    for offset in range(0, len(key_values), max_params):
+                        chunk_vals = key_values[offset:offset + max_params]
+                        in_params = {f"k{i}": v for i, v in enumerate(chunk_vals)}
+                        placeholders = ", ".join(f":k{i}" for i in range(len(chunk_vals)))
+                        exists_sql = text(
+                            f"SELECT {_quote_ident(ukey, dialect)} FROM {qtable} "
+                            f"WHERE {_quote_ident(ukey, dialect)} IN ({placeholders})"
                         )
-                        update_sql = text(f"UPDATE {qtable} SET {set_clause} WHERE {where_clause}")
-                        conn.execute(update_sql, row)
-                    else:
-                        # Prepare insert statement
-                        cols = ", ".join(_quote_ident(c, dialect) for c in row.keys())
-                        placeholders = ", ".join([f":{c}" for c in row.keys()])
-                        insert_sql = text(f"INSERT INTO {qtable} ({cols}) VALUES ({placeholders})")
-                        conn.execute(insert_sql, row)
+                        existing_rows = conn.execute(exists_sql, in_params).fetchall()
+                        existing_keys.update(row[0] for row in existing_rows)
+
+                    # Partition into updates and inserts
+                    to_update = [r for r in batch if r[ukey] in existing_keys]
+                    to_insert = [r for r in batch if r[ukey] not in existing_keys]
+
+                    # Bulk UPDATE
+                    if to_update:
+                        non_keys = [c for c in to_update[0].keys() if c not in unique_keys]
+                        if non_keys:
+                            set_clause = ", ".join(
+                                f"{_quote_ident(c, dialect)} = :{c}" for c in non_keys
+                            )
+                            where_clause = f"{_quote_ident(ukey, dialect)} = :{ukey}"
+                            update_sql = text(f"UPDATE {qtable} SET {set_clause} WHERE {where_clause}")
+                            conn.execute(update_sql, to_update)
+
+                    # Bulk INSERT
+                    if to_insert:
+                        cols = list(to_insert[0].keys())
+                        cols_quoted = ", ".join(_quote_ident(c, dialect) for c in cols)
+                        values_clause = ", ".join(f":{c}" for c in cols)
+                        insert_sql = text(f"INSERT INTO {qtable} ({cols_quoted}) VALUES ({values_clause})")
+                        conn.execute(insert_sql, to_insert)
+
+                else:
+                    # Fallback for composite keys: row-by-row EXISTS + UPDATE/INSERT
+                    for row in batch:
+                        where_clause = " AND ".join(
+                            [f"{_quote_ident(key, dialect)} = :{key}" for key in unique_keys]
+                        )
+                        params = {key: row[key] for key in unique_keys}
+
+                        exists_query = text(
+                            f"SELECT 1 WHERE EXISTS (SELECT 1 FROM {qtable} WHERE {where_clause})"
+                        )
+                        exists = conn.execute(exists_query, params).fetchone()
+
+                        if exists:
+                            set_clause = ", ".join(
+                                [
+                                    f"{_quote_ident(col, dialect)} = :{col}"
+                                    for col in row.keys()
+                                    if col not in unique_keys
+                                ]
+                            )
+                            update_sql = text(f"UPDATE {qtable} SET {set_clause} WHERE {where_clause}")
+                            conn.execute(update_sql, row)
+                        else:
+                            cols = ", ".join(_quote_ident(c, dialect) for c in row.keys())
+                            placeholders = ", ".join([f":{c}" for c in row.keys()])
+                            insert_sql = text(f"INSERT INTO {qtable} ({cols}) VALUES ({placeholders})")
+                            conn.execute(insert_sql, row)
 
                 total_rows += len(batch)
                 logger.info(f"Processed {total_rows:,} records so far...")
