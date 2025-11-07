@@ -15,7 +15,7 @@ def process_atomic_traceability_customer_orders():
     engine_dest = get_engine("tatabi")
 
     query = load_sql(query_file)
-    rows = list(extract_from_db(engine_src, query))
+    rows = extract_from_db(engine_src, query)
     upsert_to_db(engine_dest, "process.atomic_traceability_customer_orders", rows, unique_keys=["cust_ord", "style_id", "qr_id", "date"])
 
 if __name__ == "__main__":

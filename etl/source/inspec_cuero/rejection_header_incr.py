@@ -15,7 +15,7 @@ def source_inspec_cuero_rejection_header():
     engine_dest = get_engine("tatabi")
 
     query = load_sql(query_file)
-    rows = list(extract_from_db(engine_src, query))
+    rows = extract_from_db(engine_src, query)
     upsert_to_db(
         engine_dest,
         "source_inspec_cuero.rejection_header",

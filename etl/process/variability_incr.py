@@ -15,7 +15,7 @@ def process_variability():
     engine_dest = get_engine("tatabi")
 
     query = load_sql(query_file)
-    rows = list(extract_from_db(engine_src, query))
+    rows = extract_from_db(engine_src, query)
     upsert_to_db(engine_dest, "process.variability", rows, unique_keys=["year", "week", "cust_ord", "stage"])
 
 if __name__ == "__main__":

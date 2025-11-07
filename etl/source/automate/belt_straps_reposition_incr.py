@@ -15,7 +15,7 @@ def source_automate_belt_straps_reposition():
     engine_dest = get_engine("tatabi")
 
     query = load_sql(query_file)
-    rows = list(extract_from_db(engine_src, query))
+    rows = extract_from_db(engine_src, query)
     upsert_to_db(engine_dest, "source_automate.belt_straps_reposition", rows, unique_keys=["id"])
 
 if __name__ == "__main__":

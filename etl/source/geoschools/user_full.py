@@ -23,7 +23,7 @@ def geoschools_user():
     
     engine_src = get_engine("geoschools")
     query = load_sql(query_file)
-    rows = list(extract_from_db(engine_src, query))
+    rows = extract_from_db(engine_src, query)
     
     engine_dest = get_engine("dwh")
     load_to_db(engine_dest, "user", rows)

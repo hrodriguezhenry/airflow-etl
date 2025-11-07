@@ -24,7 +24,7 @@ def source_etalent_profit_center():
 
     run_sql_script(engine_dest, sql_script)
     query = load_sql(query_file)
-    rows = list(extract_from_db(engine_src, query))
+    rows = extract_from_db(engine_src, query)
     upsert_to_db(engine_dest, "source_etalent.profit_center", rows, unique_keys=["cod_profit_center"])
     
     sql_script = [

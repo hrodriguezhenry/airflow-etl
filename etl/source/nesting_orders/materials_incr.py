@@ -15,7 +15,7 @@ def source_source_nesting_orders_materials():
     engine_dest = get_engine("tatabi")
 
     query = load_sql(query_file)
-    rows = list(extract_from_db(engine_src, query))
+    rows = extract_from_db(engine_src, query)
     load_to_db(engine_dest, "source_nesting_orders.materials", rows)
 
 if __name__ == "__main__":

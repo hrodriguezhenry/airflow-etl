@@ -15,7 +15,7 @@ def source_sap_ipf1():
     engine_dest = get_engine("tatabi")
 
     query = load_sql(query_file)
-    rows = list(extract_from_db(engine_src, query))
+    rows = extract_from_db(engine_src, query)
     upsert_to_db(engine_dest, "source_sap_tata_go_live.ipf1", rows, unique_keys=['doc_entry', 'line_num'])
 
 if __name__ == "__main__":

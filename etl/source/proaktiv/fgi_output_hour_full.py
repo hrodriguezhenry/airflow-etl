@@ -46,7 +46,7 @@ def source_proaktiv_fgi_output_hour():
 
     run_sql_script(engine_dest, sql_script)
     query = load_sql(query_file)
-    rows = list(extract_from_db(engine_src, query))
+    rows = extract_from_db(engine_src, query)
     load_to_db(engine_dest, "source_proaktiv.fgi_output_hour", rows)
 
 if __name__ == "__main__":

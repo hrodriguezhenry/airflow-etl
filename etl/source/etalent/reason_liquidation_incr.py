@@ -24,7 +24,7 @@ def source_etalent_reason_liquidation():
     
     run_sql_script(engine_dest, sql_script)
     query = load_sql(query_file)
-    rows = list(extract_from_db(engine_src, query))
+    rows = extract_from_db(engine_src, query)
     upsert_to_db(engine_dest, "source_etalent.reason_liquidation", rows, unique_keys=["cod_reason_liquidation"])
 
     sql_script = [

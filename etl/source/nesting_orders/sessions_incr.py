@@ -15,7 +15,7 @@ def source_source_nesting_orders_sessions():
     engine_dest = get_engine("tatabi")
 
     query = load_sql(query_file)
-    rows = list(extract_from_db(engine_src, query))
+    rows = extract_from_db(engine_src, query)
     upsert_to_db(engine_dest, "source_nesting_orders.sessions", rows, unique_keys=["session_id"])
 
 if __name__ == "__main__":

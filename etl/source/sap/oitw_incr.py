@@ -15,7 +15,7 @@ def source_sap_oitw():
     engine_dest = get_engine("tatabi")
 
     query = load_sql(query_file)
-    rows = list(extract_from_db(engine_src, query))
+    rows = extract_from_db(engine_src, query)
     upsert_to_db(engine_dest, "source_sap_tata_go_live.oitw", rows, unique_keys=['item_code', 'whs_code'])
 
 if __name__ == "__main__":

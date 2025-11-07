@@ -16,7 +16,7 @@ def source_atomic_bonus_efficiency_daily_history_reject():
     engine_dest = get_engine("tatabi")
 
     query = load_sql(query_file)
-    rows = list(extract_from_db(engine_src, query))
+    rows = extract_from_db(engine_src, query)
     upsert_to_db(engine_dest, f"source_atomic_bonus.efficiency_daily_history_reject", rows, unique_keys=["id"])
 
 

@@ -15,7 +15,7 @@ def process_proaktiv_material_unit_cost():
     engine_dest = get_engine("tatabi")
 
     query = load_sql(query_file)
-    rows = list(extract_from_db(engine_src, query))
+    rows = extract_from_db(engine_src, query)
     upsert_to_db(engine_dest, "process.proaktiv_material_unit_cost", rows, unique_keys=["row_hash", "doc_entry", "doc_date", "card_code", "material_code", "purchase_order_date", "purchase_order", "currency", "unit_price", "unit_cost"])
 
 if __name__ == "__main__":

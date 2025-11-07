@@ -15,7 +15,7 @@ def process_atomic_efficiency_hour():
     engine_dest = get_engine("tatabi")
 
     query = load_sql(query_file)
-    rows = list(extract_from_db(engine_src, query))
+    rows = extract_from_db(engine_src, query)
     upsert_to_db(engine_dest, "process.atomic_efficiency_hour", rows, unique_keys=["mark_id", "stage_id", "line_id", "cod_employee"])
 
 if __name__ == "__main__":

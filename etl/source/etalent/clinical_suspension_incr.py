@@ -15,7 +15,7 @@ def source_etalent_clinical_suspension():
     engine_dest = get_engine("tatabi")
 
     query = load_sql(query_file)
-    rows = list(extract_from_db(engine_src, query))
+    rows = extract_from_db(engine_src, query)
     upsert_to_db(engine_dest, "source_etalent.clinical_suspension", rows, unique_keys=["id"])
 
 if __name__ == "__main__":

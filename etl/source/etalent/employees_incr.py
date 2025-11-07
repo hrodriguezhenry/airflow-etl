@@ -15,7 +15,7 @@ def source_etalent_employees():
     engine_dest = get_engine("tatabi")
 
     query = load_sql(query_file)
-    rows = list(extract_from_db(engine_src, query))
+    rows = extract_from_db(engine_src, query)
     upsert_to_db(engine_dest, "source_etalent.employees", rows, unique_keys=["code_employee"])
 
 if __name__ == "__main__":

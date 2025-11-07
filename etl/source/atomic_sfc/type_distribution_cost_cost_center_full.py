@@ -34,7 +34,7 @@ def source_atomic_sfc_type_distribution_cost_cost_center():
 
     run_sql_script(engine_dest, sql_script)
     query = load_sql(query_file)
-    rows = list(extract_from_db(engine_src, query))
+    rows = extract_from_db(engine_src, query)
     load_to_db(engine_dest, "source_atomic_sfc.type_distribution_cost_cost_center", rows)
 
 if __name__ == "__main__":

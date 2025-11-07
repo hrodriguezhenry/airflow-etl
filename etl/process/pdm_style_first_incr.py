@@ -15,7 +15,7 @@ def process_pdm_style_first():
     engine_dest = get_engine("tatabi")
 
     query = load_sql(query_file)
-    rows = list(extract_from_db(engine_src, query))
+    rows = extract_from_db(engine_src, query)
     upsert_to_db(engine_dest, "process.pdm_style_first", rows, unique_keys=["style_id", "input_field_id"])
 
 if __name__ == "__main__":

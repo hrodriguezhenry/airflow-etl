@@ -24,7 +24,7 @@ def source_fast_react_weekly_planning_old():
 
     run_sql_script(engine_dest, sql_script)
     query = load_sql(query_file)
-    rows = list(extract_from_db(engine_src, query))
+    rows = extract_from_db(engine_src, query)
     load_to_db(engine_dest, "fast_react.weekly_planning_old", rows)
 
 if __name__ == "__main__":

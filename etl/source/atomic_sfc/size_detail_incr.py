@@ -15,7 +15,7 @@ def source_atomic_sfc_size_detail():
     engine_dest = get_engine("tatabi")
 
     query = load_sql(query_file)
-    rows = list(extract_from_db(engine_src, query))
+    rows = extract_from_db(engine_src, query)
     upsert_to_db(engine_dest, "source_atomic_sfc.size_detail", rows, unique_keys=["sz_dim_det_number"])
 
 if __name__ == "__main__":

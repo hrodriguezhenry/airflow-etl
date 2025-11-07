@@ -25,7 +25,7 @@ def source_proaktiv_delivery_price_sap():
     )
 
     query = load_sql(query_file)
-    rows = list(extract_from_db(engine_src, query))
+    rows = extract_from_db(engine_src, query)
     load_to_db(engine_dest, "source_proaktiv.delivery_price_sap", rows)
 
 if __name__ == "__main__":

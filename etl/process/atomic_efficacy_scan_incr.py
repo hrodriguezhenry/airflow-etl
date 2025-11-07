@@ -15,7 +15,7 @@ def process_atomic_efficacy_scan():
     engine_dest = get_engine("tatabi")
 
     query = load_sql(query_file)
-    rows = list(extract_from_db(engine_src, query))
+    rows = extract_from_db(engine_src, query)
     upsert_to_db(engine_dest, "process.atomic_efficacy_scan", rows, unique_keys=["date", "scan_transact_id", "cust_ord", "style_id", "production_prefix", "qr_id", "stage_id", "stage", "line_id", "line", "cod_employee"])
 
 if __name__ == "__main__":

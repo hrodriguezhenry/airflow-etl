@@ -15,7 +15,7 @@ def source_osticket_ost_help_topic():
     engine_dest = get_engine("tatabi")
 
     query = load_sql(query_file)
-    rows = list(extract_from_db(engine_src, query))
+    rows = extract_from_db(engine_src, query)
     upsert_to_db(engine_dest, "source_osticket.ost_help_topic", rows, unique_keys=["topic_id"])
 
 if __name__ == "__main__":

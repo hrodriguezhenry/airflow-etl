@@ -15,7 +15,7 @@ def process_sam_specific_pdm():
     engine_dest = get_engine("tatabi")
 
     query = load_sql(query_file)
-    rows = list(extract_from_db(engine_src, query))
+    rows = extract_from_db(engine_src, query)
     upsert_to_db(engine_dest, "process.sam_specific_pdm", rows, unique_keys=["style_id", "input_field_with_id"])
 
 if __name__ == "__main__":

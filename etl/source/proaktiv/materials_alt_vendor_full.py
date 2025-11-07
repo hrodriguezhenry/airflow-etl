@@ -34,7 +34,7 @@ def source_proaktiv_materials_alt_vendor():
 
     run_sql_script(engine_dest, sql_script)
     query = load_sql(query_file)
-    rows = list(extract_from_db(engine_src, query))
+    rows = extract_from_db(engine_src, query)
     load_to_db(engine_dest, "source_proaktiv.materials_alt_vendor", rows)
 
 if __name__ == "__main__":

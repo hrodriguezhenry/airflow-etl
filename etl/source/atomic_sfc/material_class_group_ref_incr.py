@@ -15,7 +15,7 @@ def source_atomic_sfc_material_class_group_ref():
     engine_dest = get_engine("tatabi")
 
     query = load_sql(query_file)
-    rows = list(extract_from_db(engine_src, query))
+    rows = extract_from_db(engine_src, query)
     upsert_to_db(engine_dest, "source_atomic_sfc.material_class_group_ref", rows, unique_keys=["id"])
 
 if __name__ == "__main__":

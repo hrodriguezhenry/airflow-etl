@@ -34,7 +34,7 @@ def process_atomic_production_qr_operation_performed():
 
     run_sql_script(engine_dest, sql_script)
     query = load_sql(query_file)
-    rows = list(extract_from_db(engine_src, query))
+    rows = extract_from_db(engine_src, query)
     load_to_db(engine_dest, "process.atomic_production_qr_operation_performed", rows)
 
 if __name__ == "__main__":

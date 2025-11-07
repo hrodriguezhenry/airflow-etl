@@ -15,7 +15,7 @@ def process_advance_stage_planning():
     engine_dest = get_engine("tatabi")
 
     query = load_sql(query_file)
-    rows = list(extract_from_db(engine_src, query))
+    rows = extract_from_db(engine_src, query)
     upsert_to_db(engine_dest, "process.advance_stage_planning", rows, unique_keys=["cust_ord", "stage", "date"])
 
 if __name__ == "__main__":

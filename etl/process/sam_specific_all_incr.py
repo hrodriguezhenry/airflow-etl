@@ -15,7 +15,7 @@ def process_sam_specific_all():
     engine_dest = get_engine("tatabi")
 
     query = load_sql(query_file)
-    rows = list(extract_from_db(engine_src, query))
+    rows = extract_from_db(engine_src, query)
     upsert_to_db(engine_dest, "process.sam_specific_all", rows, unique_keys=["route_id", "style_id", "sam_id", "sam_specific_id", "stage", "class_group_id"])
 
 if __name__ == "__main__":

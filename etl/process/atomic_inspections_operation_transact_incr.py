@@ -15,7 +15,7 @@ def process_atomic_inspections_operation_transact():
     engine_dest = get_engine("tatabi")
 
     query = load_sql(query_file)
-    rows = list(extract_from_db(engine_src, query))
+    rows = extract_from_db(engine_src, query)
     upsert_to_db(engine_dest, "process.atomic_inspections_operation_transact", rows, unique_keys=["stage_id", "line_id"])
 
 if __name__ == "__main__":

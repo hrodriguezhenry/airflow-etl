@@ -15,7 +15,7 @@ def process_cost_employee_mod():
     engine_dest = get_engine("tatabi")
 
     query = load_sql(query_file)
-    rows = list(extract_from_db(engine_src, query))
+    rows = extract_from_db(engine_src, query)
     upsert_to_db(engine_dest, "process.cost_employee_mod", rows, unique_keys=["year", "week", "cod_employee"])
 
 if __name__ == "__main__":
