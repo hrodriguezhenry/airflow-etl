@@ -154,6 +154,7 @@ docker-compose up -d
 <p align="center">
    <img src="img/5.png" widht="600">
 </p>
+
 ---
 
 ## 10. Recomendaciones de Operación
