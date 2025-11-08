@@ -56,15 +56,11 @@ git clone https://github.com/hrodriguezg5/airflow-docker.git
 cd airflow-docker
 ```
 
-### Paso 2 – Configurar variables de entorno
-Editar el archivo `.env` con las credenciales correspondientes:
+### Paso 2 - Configurar variables de entorno
+Editar el archivo `.env` con los valores que definen el contexto de ejecución:
 ```
-SQLSERVER_HOST=172.16.10.34
-SQLSERVER_USER=hrodriguez
-SQLSERVER_PASS=********
-MYSQL_HOST=172.16.10.35
-MYSQL_USER=etl_user
-MYSQL_PASS=********
+AIRFLOW_UID=50000
+AIRFLOW_ENV=local   # o produccion
 ```
 
 ### Paso 3 – Iniciar los servicios
@@ -89,8 +85,8 @@ Servicios desplegados:
 1. Abrir el navegador y acceder a:  
    **http://localhost:8080** *(o IP del servidor)*
 2. Iniciar sesión:  
-   - Usuario: `admin`  
-   - Contraseña: configurada en `.env` o generada en la instalación.
+   - Usuario: `airflow`  
+   - Contraseña: `airflow`
 
 <p align="center">
    <img src="img/2.png" widht="600">
@@ -101,13 +97,13 @@ Servicios desplegados:
 ## 6. Ejecución de Procesos ETL (DAGs)
 
 1. Ingresar al panel principal de Airflow.  
-2. Ubicar el **DAG** correspondiente (por ejemplo, `source_accesorios`).  
+2. Ubicar el **DAG** correspondiente (por ejemplo, `source_geoschools`).  
 3. Activar el DAG con el interruptor azul.  
 4. Presionar **▶ Run** para ejecutar manualmente el flujo.  
 5. Supervisar el progreso desde:
    - **Graph View:** visualiza la secuencia de tareas.  
    - **Tree View:** muestra el historial de ejecuciones.  
-   - **Logs:** acceso al detalle de cada tarea (extract, transform, load).
+   - **Logs:** acceso al detalle de cada tarea.
 
 <p align="center">
    <img src="img/3.png" widht="600">
@@ -119,7 +115,7 @@ Servicios desplegados:
 
 - **Logs:** disponibles en `/logs/` o directamente desde la interfaz web.  
 - **Reintentos automáticos:** Airflow permite volver a ejecutar tareas fallidas.  
-- **Respaldo:** utilizar el script `backup_airflow.ps1` o configurar DAGs de respaldo automático.  
+- **Respaldo:** utilizar el script `backup_airflow.sh` o configurar DAGs de respaldo automático.  
 - **Actualizaciones:** mantener sincronizado el repositorio con Git (`git pull`).  
 
 > *Sugerencia:* programa tareas de mantenimiento semanales para limpiar logs y verificar integridad de DAGs.
